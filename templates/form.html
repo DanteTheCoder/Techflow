@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class='w-50 mx-auto' >
+<form method='POST' action='{{request.path}}' enctype="multipart/form-data"> {% csrf_token %}
+	{{ form.as_p }}
+	<button type='submit'  class="btn btn-dark" style="width:120px;height:40px;" value="Submit">Save</button>
+<form>
+</div>
+
+
+{% endblock %}
