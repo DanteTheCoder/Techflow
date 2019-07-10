@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %} View Post {%endblock%}
+
+{% block content %}
+	<div class="card mb-5 text-dark">
+		<div class="card-header font-weight-heavy">
+		<h1> {{ object.title }} </h1>
+		</div>
+		<div class="card-body">
+			<p> {{ object.content|linebreaks }} </p>
+			{% if object.image %}
+			<img src="{{object.image.url}}" class='card-img' />
+			{% endif %}
+	{% if request.user.is_authenticated and request.user == object.user %}
+	<br>
+	<input id="post_edit" type="button" value="Edit" class="btn btn-dark" style="width:80px;height:35px;"></input>
+	<input id="post_delete" type="button" value="Delete" class="btn btn-dark" style="width:80px;height:35px;"></input>
+	{% endif %}	
+	<p>Count: <p id="count">{{object.votes}}</p></p>
+	<input id="up" type="button" value="Up"></input>
+	<input id="down" type="button" value="Down"></input>
+	
+	</div>
+
+	<div class="card-footer text-muted">
+		<div class="row">
+			<div class="col-sm-2 text-dark font-weight-bold">Asked: {{object.user}} </div>
+			<div class="col-sm-6 "> at {{object.timestamp}}</div>
+			<div class="col-sm-4">Updated: {{object.updated}}</div>
+		</div>
+		</div>
+	</div>
+</div>
+<div class="row">{{object.total_answers}}</div>
+<br>
+
+{% for instance in answers %}
+<div class="card mb-5 answer" id="answer_{{instance.id}}">
+	<div class="card-body">
+	<p class="card-text">{{ instance.content|linebreaks}}</p>
+	<br>
+	{% if instance.user == request.user %}
+	<input type="button" value="Edit" class="btn btn-dark answer_edit" style="width:80px;height:35px;"></input>	
+	<input type="button" value="Delete" class="btn btn-dark answer_delete" style="width:80px;height:35px;"></input>	
+	{% endif %}
+	</div>
+	<div class="card-footer text-muted">
+		<div class="row">
+			<div class="col-sm-2 font-weight-bold">Answered: {{instance.user}} </div>
+			<div class="col-sm-6 text-dark"> at {{instance.timestamp}}</div>
+			<div class="col-sm-4">Updated: {{instance.updated}}</div>
+		</div>
+	</div>
+</div>
+{% endfor %}
+
+<div class="card mb-5 text-dark" id='new_answer'>
+	<div class="card-body">
+	<p class="card-text" id='content'></p>
+	</div>
+	<div class="card-footer text-muted">
+		<div class="row">
+			<div class="col-sm-2 font-weight-bold">Answered: <i id='user'></i> </div>
+			<div class="col-sm-6 text-dark"> at <i id='timestamp'></i></div>
+		</div>
+	</div>
+</div>
+
+<div class='w-50 mx-auto' >
+<form method='POST' action='{{request.path}}' enctype="multipart/form-data" id='answer_form'> {% csrf_token %}
+	{{ form.as_p }}
+		<button type='submit'  class="btn btn-dark" style="width:80px;height:35px;" value="Submit" id='btn_answer'>Answer</button>
+<form>
+</div>
+
+<div id="dialog-confirm" title="Delete">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure?</p>
+</div>
+
+{% endblock %}
+
+{% block jquery %}
+	var count_p = $("#count");
+	var up_btn = $("#up");
+	var down_btn = $("#down");
+	var form = $("#answer_form");
+	$("#new_answer").hide();
+	$("#dialog-confirm").hide();
+
+	$(".answer_delete").on("click", function(e){
+		var url = "/posts/{{object.id}}/answer_id/delete";
+		answer = $(this).closest(".answer");
+		var id = String(answer[0].id);
+		var idarr = id.split("_");
+		url = url.replace("answer_id",idarr[1]);
+		$( "#dialog-confirm" ).dialog({
+	      resizable: true,
+	      height: "auto",
+	      width: 350,
+	      modal: true,
+	      buttons: {
+	        "Yes": function() {
+	        	$.ajax({
+	        		url: url,
+	        		type: "GET",
+	        		success : function() {
+	        			$("#dialog-confirm").dialog( "close" );
+						answer.animate({opacity: 0.4});
+	        		},
+	        	})
+		        },
+	        "No": function() {
+	          $( this ).dialog( "close" );
+	        }
+	      }
+	    });
+	});
+
+
+	$("#post_delete").on("click", function(e){
+		$( "#dialog-confirm" ).dialog({
+	      resizable: true,
+	      height: "auto",
+	      width: 350,
+	      modal: true,
+	      buttons: {
+	        "Yes": function() {
+	        	$.ajax({
+	        		url: "/posts/{{object.id}}/delete",
+	        		type: "GET",
+	        		success : function() {
+						$(location).attr('href', "/posts");	
+	        		},
+	        	})
+		        },
+	        "No": function() {
+	          $( this ).dialog( "close" );
+	        }
+	      }
+	    });
+	});
+
+	$("#answer_form").on("submit",function(event){
+		event.preventDefault();
+		$.ajax({
+			url:"{{request.path}}",
+			type:"POST",
+			data : form.serialize(),
+			success : function(data) {
+				$("#user").text(data.user);
+				$("#content").text(data.content);
+				$("#timestamp").text(data.timestamp);
+				$("#new_answer").show();
+			},
+			error: function(data){
+				console.log("Error mate");
+			},	
+		});
+
+	});
+
+	down_btn.on("click",function(){
+		$.ajax({
+			url: '/posts/{{object.id}}/vote',
+			type: "post",
+			data: {
+				old: count_p.text(),
+				is_down: true,
+				csrfmiddlewaretoken: "{{ csrf_token }}"
+			},
+			success: function(data) {
+				count_p.text(data.new);
+			},
+			error: function(data){
+				console.log("Error mate");
+			},
+		});
+	});
+
+	up_btn.on("click", function() {
+		$.ajax({
+			url: '/posts/{{object.id}}/vote',
+			type: "post",
+			data: {
+				old: count_p.text(),
+				is_down: false,
+				csrfmiddlewaretoken: "{{ csrf_token }}"
+			},
+			success: function(data) {
+				count_p.text(data.new);
+			},
+			error: function(data) {
+				console.log("hey")
+			}
+		});
+	});
+{% endblock %}
