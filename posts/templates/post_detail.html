@@ -1,25 +1,30 @@
 {% extends "base.html" %}
 {% block title %} View Post {%endblock%}
-
+{% load static %}
+<link href="{% static 'beautiful.css' %}" rel='stylesheet' type='text/css'>
+<script src="https://kit.fontawesome.com/17c6290372.js"></script>
 {% block content %}
 	<div class="card mb-5 text-dark">
 		<div class="card-header font-weight-heavy">
 		<h1> {{ object.title }} </h1>
 		</div>
-		<div class="card-body">
+		<div class="card-body post-layout">
+			<div class="col votes">
+			<button id="up" class="btn" ><i class="fas fa-angle-up fa-2x"></i></button>
+			<h5 id="count">{{object.votes}}</h5>
+			<button id="down" class="btn"><i class="fas fa-angle-down fa-2x"></i></button>
+			</div>
+			<div class="content">
 			<p> {{ object.content|linebreaks }} </p>
 			{% if object.image %}
 			<img src="{{object.image.url}}" class='card-img' />
 			{% endif %}
 	{% if request.user.is_authenticated and request.user == object.user %}
 	<br>
-	<input id="post_edit" type="button" value="Edit" class="btn btn-dark" style="width:80px;height:35px;"></input>
-	<input id="post_delete" type="button" value="Delete" class="btn btn-dark" style="width:80px;height:35px;"></input>
+	<button id="post_edit"class="btn"><i class="fas fa-pen fa-2x"></i></button>
+	<button id="post_delete" class="btn"><i class="fas fa-trash-alt fa-2x"></i></button>
 	{% endif %}	
-	<p>Count: <p id="count">{{object.votes}}</p></p>
-	<input id="up" type="button" value="Up"></input>
-	<input id="down" type="button" value="Down"></input>
-	
+	</div>
 	</div>
 
 	<div class="card-footer text-muted">
@@ -36,13 +41,21 @@
 
 {% for instance in answers %}
 <div class="card mb-5 answer" id="answer_{{instance.id}}">
-	<div class="card-body">
-	<p class="card-text">{{ instance.content|linebreaks}}</p>
+	<div class="card-body post-layout">
+	<div class="col votes">	
+	<button id="answer_up" class="btn" ><i class="fas fa-angle-up fa-2x"></i></button>
+		<h5 id="count">{{object.votes}}</h5>
+	<button id="answer_down" class="btn"><i class="fas fa-angle-down fa-2x"></i></button>
+	</div>
+	<div class="content">
+	<p class="card-text content">{{ instance.content|linebreaks}}</p>
+	
 	<br>
 	{% if instance.user == request.user %}
-	<input type="button" value="Edit" class="btn btn-dark answer_edit" style="width:80px;height:35px;"></input>	
-	<input type="button" value="Delete" class="btn btn-dark answer_delete" style="width:80px;height:35px;"></input>	
+	<button class="btn answer_edit"><i class="fas fa-pen fa-2x"></i></button>	
+	<button class="btn answer_delete"><i class="fas fa-trash-alt fa-2x"></i></button>	
 	{% endif %}
+	</div>
 	</div>
 	<div class="card-footer text-muted">
 		<div class="row">
@@ -67,6 +80,7 @@
 </div>
 
 <div class='w-50 mx-auto' >
+<h4>Your Answer</h4>
 <form method='POST' action='{{request.path}}' enctype="multipart/form-data" id='answer_form'> {% csrf_token %}
 	{{ form.as_p }}
 		<button type='submit'  class="btn btn-dark" style="width:80px;height:35px;" value="Submit" id='btn_answer'>Answer</button>
@@ -170,6 +184,7 @@
 			},
 			success: function(data) {
 				count_p.text(data.new);
+				down_btn.attr("disabled",true);
 			},
 			error: function(data){
 				console.log("Error mate");
@@ -188,6 +203,7 @@
 			},
 			success: function(data) {
 				count_p.text(data.new);
+				up_btn.attr("disabled",true);
 			},
 			error: function(data) {
 				console.log("hey")

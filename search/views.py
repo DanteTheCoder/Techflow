@@ -16,7 +16,7 @@ def search_view(request):
 	qs = (Post.objects.filter(title__icontains=query)|
 		Post.objects.filter(content__icontains=query)|
 		Post.objects.filter(user__username__icontains=query)|
-		Post.objects.filter(tags__name__in=[query]) )
+		Post.objects.filter(tags__name__in=[query]) ).distinct()
 
 	context = {"object_list" : qs}
 	return render(request,'post_list.html',context)

@@ -1,5 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-warning">
-  <a class="navbar-brand text-dark" href="/">TechFlow</a>
+{% load static %}
+<link href="{% static 'beautiful.css' %}" rel='stylesheet' type='text/css'>
+<nav class="navbar navbar-expand-lg navbar-light colornav" >
+  <a class="navbar-brand text-dark" href="/"><img class="resize" src="http://technarts.com/sitedesign/images/logo_tr.png"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -7,12 +9,17 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       {% if request.user.is_authenticated %}
+      <div class="sibling-fade row mr-auto l">
+       <li class="nav-item active">
+        <a class="nav-link text-dark" href="/posts"> <h3 class="font-weight-light">Posts</h3> <span class="sr-only">(current)</span></a>
+      </li>
       <li class="nav-item active">
-        <a class="nav-link text-dark" href="/blog/profiles"> Profiles <span class="sr-only">(current)</span></a>
+        <a class="nav-link text-dark" href="/blog/profiles"> <h3 class="font-weight-light">Profiles</h3> <span class="sr-only">(current)</span></a>
       </li>
-        <li class="nav-item active">
-        <a class="nav-link text-dark" href="/posts"> Posts <span class="sr-only">(current)</span></a>
+      <li class="nav-item active">
+        <a class="nav-link text-dark" href="/posts/create"> <h3 class="font-weight-light">Ask a Question</h3> <span class="sr-only">(current)</span></a>
       </li>
+    </div>
     </ul>
      <ul class="navbar-nav ml-auto">
             <li class="nav-item">

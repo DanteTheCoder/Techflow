@@ -84,4 +84,5 @@ def delete_answer(request,id_p,id_a):
 	obj = Answer.objects.filter(id=id_a)
 	obj.delete()
 	url = f"/posts/{id_p}/{id_a}/delete"
-	return JsonResponse({"url": url})	
+	return JsonResponse({"url": url})
+

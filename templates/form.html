@@ -2,7 +2,7 @@
 
 
 {% block content %}
-
+<br>
 <div class='w-50 mx-auto' >
 <form method='POST' action='{{request.path}}' enctype="multipart/form-data"> {% csrf_token %}
 	{{ form.as_p }}
