@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+ <head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/default.min.css">
+    {% load static %}
+ 	<link rel="stylesheet" href="{% static 'beautiful.css' %}" type="text/css"> 
+ </head>
+  <body class='bg'>	 
+  	{% include 'navbar.html' %}
+{% block content %}
+{% if request.user.is_authenticated %}
+	<div class="jumbotron bg-transparent">
+		<div class="container ">
+		  <h1 class="display-3">Welcome back {{user}}</h1>
+		  <p class="lead">Hello sir. You can check newly asked questions or ask yours.</p>
+		</div>
+	</div>
+
+{% else %}
+	<div class="jumbotron transparent">
+	  <h1 class="display-4">Welcome to Q&A application of Technarts.</h1>
+	  <p class="lead font-weight-light">Join the community right away.</p>
+	  <hr class="my-4">
+	  <div class="row ml-2">
+	  <h5 class='font-weight-normal'>It seems you haven't signed in yet.</h5>
+	  	&nbsp;	&nbsp;
+			&nbsp;	&nbsp;	&nbsp;	&nbsp;	&nbsp;	&nbsp;	&nbsp;
+		<h5 class='font-weight-normal'>Don't have an account ?</h5>
+			&nbsp;	&nbsp;
+		<a href=/signup class = "btn btn-dark font-weight-light">Sign Up</a>
+	</div>
+	<div class='w-25' >
+		<form method='POST' action='{{request.path}}' class="formin"> {% csrf_token %}
+			{{ form.as_p }}
+			<button type='submit'  class="btn btn-dark" style="width:120px;height:40px;" value="Sign In">Sign In</button>
+		</form>
+		</div>
+	</div>
+{% endif %}
+{% endblock %}
+ </body>
+</html>
