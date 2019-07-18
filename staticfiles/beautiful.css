@@ -23,6 +23,29 @@
 	background-color: #59698d;
 }
 
+.bg {
+  /* The image used */
+  background-image: url("https://wallpaper-gallery.net/images/hd-mountain-wallpapers-1080p/hd-mountain-wallpapers-1080p-7.jpg");
+
+  /* Half height */
+  height: 50%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.bg-bum {
+
+ /* The image used */
+ background-color: #eceff1;
+}
+
+.transparent{
+  background:rgba(255,255,255,0.3);
+}
 
 .btn-style:hover {
     color: #333;
@@ -42,9 +65,14 @@
 	width:auto;
 	display: flex;
 	margin-left: 0px;
-	background-color: #f3e5f5;
+	padding-left: 0px;
+	padding-bottom: 0px;
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
+.card {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
 .content {
 	width:auto;
 	float:right;
@@ -55,9 +83,14 @@
 	width:auto;
 	margin-top: 15px;
 	align-self: top;
-	padding-left: 0px;
 }
 
-#count {
-	margin-left: 17px
+.count {
+	text-align: center;
 }
+
+.buttons {
+    text-align: right;
+    align-items: right;
+    margin-right: 10px;
+  }
