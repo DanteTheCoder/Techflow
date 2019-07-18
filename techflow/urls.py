@@ -16,10 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from search.views import search_view
+from django.conf import settings
+from django.conf.urls.static import static
+from .views import home, signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',home.as_view()),
+    path('signup/',signup.as_view()),
     path('posts/',include('posts.urls')),
     path('search/',search_view),
-]
+    path('ckeditor/',include('ckeditor_uploader.urls')),
+] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 
