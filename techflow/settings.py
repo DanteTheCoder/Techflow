@@ -40,7 +40,25 @@ INSTALLED_APPS = [
     'posts',
     'search',
     'taggit',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+CKEDITOR_CONFIGS = {
+    'default' : {
+        'toolbar' : 'Custom',
+        'toolbar_Custom': [
+        ['Styles', 'Format', 'CodeSnippet', 'Bold', 'Italic', 'Underline', 'Strike', 'Undo', 'Redo'],
+        ['Link','Unlink','Anchor'],
+        ['Image', 'Table', 'HorizontalRule','NumberedList','BulletedList'],
+        ['TextColor', 'BGColor'],
+        ['Smiley', 'SpecialChar']
+        ],
+        'extraPlugins': 'codesnippet',
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -123,13 +141,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static/'
 
-LOCAL_STATIC_CDN_PATH = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn_test')
-
-STATIC_ROOT = os.path.join(LOCAL_STATIC_CDN_PATH, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'staticfiles')
 ]
 
-MEDIA_ROOT = os.path.join(LOCAL_STATIC_CDN_PATH, 'media')
+MEDIA_ROOT = 'media/'
 MEDIA_URL = '/media/'
