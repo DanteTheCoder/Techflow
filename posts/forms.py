@@ -6,7 +6,6 @@ class PostModelForm(forms.ModelForm):
 		model = Post
 		fields=[
 			'title',
-			'image',
 			'content',
 			'tags',
 			]
@@ -21,13 +20,12 @@ class PostModelForm(forms.ModelForm):
 			self.fields[field].label = ''
 
 		self.fields['title'].widget.attrs['placeholder'] = 'Title'
-		self.fields['content'].widget.attrs['placeholder'] = 'Content'
-		self.fields['tags'].widget.attrs['placeholder'] = 'star,its,css'
+		self.fields['tags'].widget.attrs['placeholder'] = 'Tags: star,its,css'
 
 class AnswerModelForm(forms.ModelForm):
 	class Meta:
 		model = Answer
-		fields = ['content','image']
+		fields = ['content']
 
 	def __init__(self, *args, **kwargs):
 		super(AnswerModelForm, self).__init__(*args, **kwargs)

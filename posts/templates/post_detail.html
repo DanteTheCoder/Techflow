@@ -4,28 +4,35 @@
 <link href="{% static 'beautiful.css' %}" rel='stylesheet' type='text/css'>
 <script src="https://kit.fontawesome.com/17c6290372.js"></script>
 {% block content %}
-	<div class="card mb-5 text-dark">
+	<div class="card mb-5 text-dark mx-auto" style="width: 1200px;">
 		<div class="card-header font-weight-heavy">
 		<h1> {{ object.title }} </h1>
 		</div>
 		<div class="card-body post-layout">
-			<div class="col votes">
-			<button id="up" class="btn" ><i class="fas fa-angle-up fa-2x"></i></button>
+			{% if request.user in object.voters.all %}
+			<div class="votes">
+			<button id="up" class="btn" disabled><i class="fas fa-angle-up fa-2x"></i></button>
+			<h5 id="count" class="count">{{object.votes}}</h5>
+			<button id="down" class="btn" disabled><i class="fas fa-angle-down fa-2x"></i></button>
+			</div>
+			{% else %}
+			<div class="votes">
+			<button id="up" class="btn"><i class="fas fa-angle-up fa-2x"></i></button>
 			<h5 id="count">{{object.votes}}</h5>
 			<button id="down" class="btn"><i class="fas fa-angle-down fa-2x"></i></button>
 			</div>
-			<div class="content">
-			<p> {{ object.content|linebreaks }} </p>
-			{% if object.image %}
-			<img src="{{object.image.url}}" class='card-img' />
 			{% endif %}
-	{% if request.user.is_authenticated and request.user == object.user %}
-	<br>
-	<button id="post_edit"class="btn"><i class="fas fa-pen fa-2x"></i></button>
-	<button id="post_delete" class="btn"><i class="fas fa-trash-alt fa-2x"></i></button>
-	{% endif %}	
-	</div>
-	</div>
+			<div id="content_post" class="content" contenteditable="false">
+			<p id="content_post_p card-text" class="content_post_p"> {{ object.content|safe }} </p>
+			</div>
+		</div>
+		{% if request.user.is_authenticated and request.user == object.user %}
+			<div class="buttons">
+			<button id="post_save" class="btn" style="display:none;"><i class="fas fa-check fa-2x"></i><button>
+			<button id="post_edit"class="btn"><i class="fas fa-pen fa-2x"></i></button>
+			<button id="post_delete" class="btn"><i class="fas fa-trash-alt fa-2x"></i></button>
+			</div>
+			{% endif %}	
 
 	<div class="card-footer text-muted">
 		<div class="row">
@@ -40,23 +47,32 @@
 <br>
 
 {% for instance in answers %}
-<div class="card mb-5 answer" id="answer_{{instance.id}}">
+<div class="card mb-5 answer w-75 mx-auto" id="answer_{{instance.id}}">
 	<div class="card-body post-layout">
-	<div class="col votes">	
-	<button id="answer_up" class="btn" ><i class="fas fa-angle-up fa-2x"></i></button>
-		<h5 id="count">{{object.votes}}</h5>
-	<button id="answer_down" class="btn"><i class="fas fa-angle-down fa-2x"></i></button>
+	{% if request.user in instance.voters.all %}
+	<div class="votes">	
+	<button class="btn answer_up" disabled><i class="fas fa-angle-up fa-2x"></i></button>
+		<h5 class="count_a count">{{instance.votes}}</h5>
+	<button class="btn answer_down" disabled><i class="fas fa-angle-down fa-2x"></i></button>
 	</div>
-	<div class="content">
-	<p class="card-text content">{{ instance.content|linebreaks}}</p>
-	
-	<br>
-	{% if instance.user == request.user %}
-	<button class="btn answer_edit"><i class="fas fa-pen fa-2x"></i></button>	
-	<button class="btn answer_delete"><i class="fas fa-trash-alt fa-2x"></i></button>	
+	{% else %}
+	<div class="votes">	
+	<button class="btn answer_up"><i class="fas fa-angle-up fa-2x"></i></button>
+		<h5 class="count_a count">{{ instance.votes }}</h5>
+	<button class="btn answer_down"><i class="fas fa-angle-down fa-2x"></i></button>
+	</div>
 	{% endif %}
+	<div class="content" id="anscon_{{instance.id}}" contenteditable="false">
+	<p class="card-text content_answer_p">{{ instance.content|safe }}</p>
 	</div>
 	</div>
+	{% if instance.user == request.user %}
+	<div class="buttons">
+	<button class="btn answer_save" style="display:none;"><i class="fas fa-check fa-2x"></i><button>
+	<button class="btn answer_edit"><i class="fas fa-pen fa-2x"></i></button>
+	<button class="btn answer_delete"><i class="fas fa-trash-alt fa-2x"></i></button>
+	</div>
+	{% endif %}
 	<div class="card-footer text-muted">
 		<div class="row">
 			<div class="col-sm-2 font-weight-bold">Answered: {{instance.user}} </div>
@@ -67,23 +83,12 @@
 </div>
 {% endfor %}
 
-<div class="card mb-5 text-dark" id='new_answer'>
-	<div class="card-body">
-	<p class="card-text" id='content'></p>
-	</div>
-	<div class="card-footer text-muted">
-		<div class="row">
-			<div class="col-sm-2 font-weight-bold">Answered: <i id='user'></i> </div>
-			<div class="col-sm-6 text-dark"> at <i id='timestamp'></i></div>
-		</div>
-	</div>
-</div>
-
-<div class='w-50 mx-auto' >
+<div class='w-50 mx-auto'>
 <h4>Your Answer</h4>
-<form method='POST' action='{{request.path}}' enctype="multipart/form-data" id='answer_form'> {% csrf_token %}
+<form method='POST' action='{{request.path}}' enctype="multipart/form-data" id='answer_form' > {% csrf_token %}
+	{{ form.media }}
 	{{ form.as_p }}
-		<button type='submit'  class="btn btn-dark" style="width:80px;height:35px;" value="Submit" id='btn_answer'>Answer</button>
+	<button type='submit'  class="btn btn-dark" style="width:80px;height:35px;" value="Submit" id='btn_answer'>Answer</button>
 <form>
 </div>
 
@@ -92,14 +97,93 @@
 </div>
 
 {% endblock %}
+{% block scripts %}
+{% endblock %}
 
 {% block jquery %}
 	var count_p = $("#count");
 	var up_btn = $("#up");
 	var down_btn = $("#down");
 	var form = $("#answer_form");
-	$("#new_answer").hide();
 	$("#dialog-confirm").hide();
+	var post_content = $("#content_post");
+	var post_save = $("#post_save");
+	var cfg1 =  {
+        'toolbar' : 'Custom',
+        'toolbar_Custom': [
+        ['Styles', 'Format', 'CodeSnippet', 'Bold', 'Italic', 'Underline', 'Strike', 'Undo', 'Redo'],
+        ['Link','Unlink','Anchor'],
+        ['Image', 'Table', 'HorizontalRule','NumberedList','BulletedList'],
+        ['TextColor', 'BGColor'],
+        ['Smiley', 'SpecialChar']
+        ],
+        'extraPlugins': 'codesnippet',
+    }
+
+
+	$("#post_edit").on("click", function(e){
+		post_content.attr('contenteditable', true);
+		CKEDITOR.inline( 'content_post',cfg1 );
+		post_save.show();
+	});
+
+	post_save.on("click", function(e){
+		var data = CKEDITOR.instances["content_post"].getData();
+		$.ajax({
+			url :"/posts/{{object.id}}/update/",
+			type:"POST",
+			data:{
+			content: data,
+			csrfmiddlewaretoken: "{{ csrf_token }}",
+			},
+			success: function(data){
+				$("#content_post").find(".content_post_p").text(data);
+				post_save.hide();
+				post_content.attr('contenteditable',false);
+				CKEDITOR.instances.content_post.destroy();
+				hljs.initHighlighting.called = false;
+				hljs.initHighlighting();
+		},
+			error:function(){
+				console.log("error with edit save post");
+		},
+	});
+	});
+
+	$(".answer_edit").on("click", function(e){
+		answer_content = $(this).parent().parent().find(".post-layout").find(".content");
+		answer_content.attr('contenteditable', true);
+		var id = answer_content.attr('id');
+		CKEDITOR.inline(id,cfg1);
+		var answer_save = $(this).parent().find(".answer_save");
+		answer_save.show();
+		var url = "/posts/{{object.id}}/answer_id/update";
+		var idarr = id.split("_");
+		url = url.replace("answer_id",idarr[1]);
+		answer_save.on("click",function(){
+			var data = CKEDITOR.instances[id].getData();
+			$.ajax({
+				url : url,
+				type: "POST",
+				data:{
+				content: data,
+				csrfmiddlewaretoken: "{{ csrf_token }}",
+			},
+				success: function(data){
+					answer_content.find(".content_answer_p").text(data);
+					answer_save.hide();
+					answer_content.attr('contenteditable',false);
+					CKEDITOR.instances[id].destroy();
+					hljs.initHighlighting.called = false;
+					hljs.initHighlighting();
+			},
+				error:function(){
+					console.log("error with edit save answer");
+			},
+			});
+
+		});
+	});
 
 	$(".answer_delete").on("click", function(e){
 		var url = "/posts/{{object.id}}/answer_id/delete";
@@ -130,7 +214,6 @@
 	    });
 	});
 
-
 	$("#post_delete").on("click", function(e){
 		$( "#dialog-confirm" ).dialog({
 	      resizable: true,
@@ -154,23 +237,61 @@
 	    });
 	});
 
-	$("#answer_form").on("submit",function(event){
-		event.preventDefault();
-		$.ajax({
-			url:"{{request.path}}",
-			type:"POST",
-			data : form.serialize(),
-			success : function(data) {
-				$("#user").text(data.user);
-				$("#content").text(data.content);
-				$("#timestamp").text(data.timestamp);
-				$("#new_answer").show();
-			},
-			error: function(data){
-				console.log("Error mate");
-			},	
-		});
+	$(".answer_up").on("click", function(e){
+		var button = $(this);
+		var count_a = button.parent().find(".count_a");
+		console.log(count_a);
+		var url = "/posts/answer_id/vote";
+		var answer = button.closest(".answer");
+		var id = String(answer[0].id);
+		var idarr = id.split("_");
+		url = url.replace("answer_id",idarr[1]);
+		console.log(url);
+        	$.ajax({
+        		url: url,
+        		type: "post",
+        		data: {
+				old: count_a.text(),
+				is_down: false,
+				is_answer: true,
+				csrfmiddlewaretoken: "{{ csrf_token }}"
+				},
+				success: function(data) {
+					count_a.text(data.new);
+					console.log(data);
+					button.attr("disabled",true);
+				},
+				error: function(data){
+					console.log("Error mate");
+				},
+	       	});
+	});	
 
+	$(".answer_down").on("click", function(e){
+		var button = $(this);
+		var url = "/posts/answer_id/vote";
+		var count_a = button.closest(".count_a");
+		answer = $(this).closest(".answer");
+		var id = String(answer[0].id);
+		var idarr = id.split("_");
+		url = url.replace("answer_id",idarr[1]);
+        	$.ajax({
+        		url: url,
+        		type: "post",
+        		data: {
+				old: count_a.text(),
+				is_down: true,
+				is_answer: true,
+				csrfmiddlewaretoken: "{{ csrf_token }}"
+				},
+				success: function(data) {
+					count_a.text(data.new);
+					button.attr("disabled",true);
+				},
+				error: function(data){
+					console.log("Error mate");
+				},
+	       	});
 	});
 
 	down_btn.on("click",function(){
@@ -180,6 +301,7 @@
 			data: {
 				old: count_p.text(),
 				is_down: true,
+				is_answer: false,
 				csrfmiddlewaretoken: "{{ csrf_token }}"
 			},
 			success: function(data) {
@@ -199,6 +321,7 @@
 			data: {
 				old: count_p.text(),
 				is_down: false,
+				is_answer: false,
 				csrfmiddlewaretoken: "{{ csrf_token }}"
 			},
 			success: function(data) {
@@ -206,7 +329,7 @@
 				up_btn.attr("disabled",true);
 			},
 			error: function(data) {
-				console.log("hey")
+				console.log("Error mate")
 			}
 		});
 	});
